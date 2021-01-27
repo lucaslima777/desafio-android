@@ -1,28 +1,20 @@
 package com.picpay.desafio.android.view
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.picpay.desafio.android.util.CoroutineTestRule
+import com.picpay.desafio.android.base.BaseTest
 import com.picpay.desafio.android.data.ResultState
 import com.picpay.desafio.android.data.repository.UserRepository
-import com.picpay.desafio.android.model.User
+import com.picpay.desafio.android.util.buildListUsers
+import com.picpay.desafio.android.util.buildListUsersEmpty
 import com.picpay.desafio.android.util.observeForTesting
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 
 @ExperimentalCoroutinesApi
-class UserViewModelTest {
-
-    @get:Rule
-    val coroutineTestRule = CoroutineTestRule()
-
-    @get:Rule
-    var rule: TestRule = InstantTaskExecutorRule()
+class UserViewModelTest : BaseTest() {
 
     private val userRepository: UserRepository = mockk()
 
@@ -57,27 +49,12 @@ class UserViewModelTest {
 
     @Test
     fun `users - API retorna com lista vazia`() {
-        val resultSuccessEmpty = ResultState.Success(emptyList())
+        val resultSuccessEmpty = ResultState.Success(buildListUsersEmpty())
 
         coEvery { userRepository.getUsers() } returns resultSuccessEmpty.data
 
         viewModel.users.observeForTesting {
             assertEquals(viewModel.users.value, ResultState.Error)
         }
-    }
-
-    private fun buildListUsers(): List<User> {
-        val users = ArrayList<User>()
-        for (i in 1..5) {
-            users.add(
-                User(
-                    img = "url$i",
-                    name = "name$i",
-                    id = i,
-                    username = "userName$i"
-                )
-            )
-        }
-        return users
     }
 }
