@@ -43,5 +43,5 @@ val appModule = module {
         get<Retrofit>().create(PicPayService::class.java)
     }
     single<UserRepository> { UserDataSource(get()) }
-    viewModel { UserViewModel(get()) }
+    viewModel { UserViewModel.ViewModelFactory(get()).create(UserViewModel::class.java) }
 }
